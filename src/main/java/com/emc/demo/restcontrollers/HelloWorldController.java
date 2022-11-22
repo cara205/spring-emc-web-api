@@ -1,4 +1,4 @@
-package com.emc.demo.controllers;
+package com.emc.demo.restcontrollers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

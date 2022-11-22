@@ -1,45 +1,46 @@
 package com.emc.demo.controllers;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
 
 import com.emc.demo.model.Student;
-import com.emc.demo.service.StudentService;
 
-
-@CrossOrigin
-@RestController
-@RequestMapping("student")
+@Controller
 public class StudentController {
 	
+		
 	@Autowired
-	private StudentService studentService;
+	private RestTemplate restTemplate;
 	
-	@GetMapping(path = "/students", produces = "application/json")
-	@CrossOrigin
-	public ResponseEntity<List<Student>> getStudents() {
-		
-		List<Student> studentList = studentService.getStudents();
-		return ResponseEntity.ok(studentList);
-		
-	}
+	@Value("${webservice.url}")
+	private String url;
+
 	
-	@PostMapping("/students")
-	@CrossOrigin
-	public ResponseEntity<Student> saveStudent(@RequestBody Student student) {
+	@GetMapping("/studentList")
+	public String getStudents(Model model) {
+			
+		//String fooResourceUrl = "https://emc-spring-boot-cristina.herokuapp.com/student/students";
 		
-		Student studentNew = studentService.saveStudent(student);
-		return new ResponseEntity<Student>(studentNew,HttpStatus.CREATED);
+		//String fooResourceUrl = "http://localhost:8080/student/students";
+
 		
+		ResponseEntity<Student[]> response = restTemplate
+				.getForEntity(url, Student[].class);
+		Student[] studentsArray = response.getBody();
+
+		List<Student> studentList2 = Arrays.asList(studentsArray);
+		model.addAttribute("students", studentList2);
+
+		return "showStudents";
 	}
 
 }
