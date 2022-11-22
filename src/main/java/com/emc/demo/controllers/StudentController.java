@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -31,7 +33,6 @@ public class StudentController {
 		//String fooResourceUrl = "https://emc-spring-boot-cristina.herokuapp.com/student/students";
 		
 		//String fooResourceUrl = "http://localhost:8080/student/students";
-
 		
 		ResponseEntity<Student[]> response = restTemplate
 				.getForEntity(url, Student[].class);
@@ -41,6 +42,20 @@ public class StudentController {
 		model.addAttribute("students", studentList2);
 
 		return "showStudents";
+	}
+	
+	@GetMapping("/addStudentForm")
+	public String addStudentForm(Model model) {
+
+		Student student = new Student();	
+		model.addAttribute("student", student);
+		return "addStudent";
+	}
+	
+	@PostMapping("/saveStudent")
+	public String saveStudent(@ModelAttribute Student student) {
+		restTemplate.postForEntity(url, student, String.class);
+		return "redirect:/studentList";
 	}
 
 }
